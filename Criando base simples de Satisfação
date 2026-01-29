@@ -1,0 +1,48 @@
+import pandas as pd
+import numpy as np
+
+#vou criar a primeira coluna Venda ID
+basesatisfacao = pd.DataFrame({"Venda ID": range(1,1001)})
+
+#vou criar a coluna de produtos e distrubir entre os ids venda
+produtos = ["Calça Jeans", "Bermuda Casual", "Camisa Social", 
+            "Camisa Casual", "Camiseta", "Tênis Esportivo", 
+            "Sapato Social", "Boné", "Calça de Algodão", 
+            "Óculos escuro", "Cinto de couro"]
+
+basesatisfacao["Produto"] = np.random.choice(produtos, size=1000)
+
+#vou criar a coluna de nota e dristribuir
+nota = [1, 2, 3, 4, 5]
+
+basesatisfacao['Nota'] = np.random.choice(nota, size=1000)
+
+#vou criar a coluna avaliação 
+def avaliacao(nota):
+    if nota in [1, 2, 3]:
+        return "Bad"
+    else:
+        return "Good"
+    
+basesatisfacao["Avaliação"] = basesatisfacao["Nota"].apply(avaliacao)
+
+#criando a coluna feedback
+
+feedbad = ["Preço", "Qualidade do produto", "Entrega demorada",
+             "Produto danificado", "Produto defeituoso",
+             "Não atendeu as expectativas"]
+
+feedgood = ["Preço", "Qualidade do produto", "Entrega Rápida",
+           "Superou as expectativas", "Atende a expectativa"]
+
+def motivofeedback(avaliacao):
+    if avaliacao == "Bad":
+        return np.random.choice(feedbad)
+    else:
+        return np.random.choice(feedgood)
+    
+basesatisfacao["Feedback"] = basesatisfacao["Avaliação"].apply(motivofeedback)
+
+print(basesatisfacao.columns)
+
+basesatisfacao.to_excel('Base Satisfação.xlsx', index=False)
