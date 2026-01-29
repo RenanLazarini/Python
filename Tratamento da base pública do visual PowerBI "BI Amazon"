@@ -1,0 +1,56 @@
+import pandas as pd
+
+arquivo = pd.read_csv('amazon.csv', sep=',')
+
+# print(arquivo.columns)
+# print(arquivo.duplicated().sum()) - não há duplicados
+# print(arquivo.info()) não há linhas em branco
+# print(arquivo.drop(['product_link', 'img_link', 'review_content', 'review_title',
+#                      'review_id', 'about_product'],axis=1))
+
+
+arquivo['discounted_price'] = arquivo['discounted_price'].str.replace('₹', '', 
+                                                                      regex= True).str.strip()
+arquivo['discounted_price'] = arquivo['discounted_price'].str.replace(',', '', 
+                                                                      regex= True).str.strip()
+arquivo['discounted_price'] = pd.to_numeric(arquivo['discounted_price'], errors='coerce')
+# print(arquivo['discounted_price'].sum())
+
+
+arquivo['actual_price'] = arquivo['actual_price'].str.replace('₹', '', 
+                                                                      regex= True).str.strip()
+arquivo['actual_price'] = arquivo['actual_price'].str.replace(',', '', 
+                                                                      regex= True).str.strip()
+arquivo['actual_price'] = pd.to_numeric(arquivo['actual_price'], errors='coerce')
+
+arquivo['rating_count'] = arquivo['rating_count'].str.replace(',' , '', regex=True).str.strip()
+arquivo['rating_count'] = pd.to_numeric(arquivo['rating_count'], errors='coerce')
+
+arquivo['Id Produto'] = arquivo['product_id']
+arquivo['Nome Produto'] = arquivo['product_name']
+arquivo['Categoria Completo'] = arquivo['category']
+arquivo['Categoria'] = arquivo['category'].str.split('|').str[0]
+# Criar coluna 'Subcategoria' pegando o último item de 'category'
+arquivo['Subcategoria'] = arquivo['category'].str.split('|').str[-2]
+arquivo['Produto'] = arquivo['category'].str.split('|').str[-1]
+arquivo['Preço Produto'] = arquivo['actual_price']
+arquivo['Desconto'] = arquivo['discounted_price']
+arquivo['% Desconto'] = arquivo['discount_percentage']
+arquivo['Nota Geral'] = arquivo['rating']
+arquivo['Quantidade de Avaliações'] = arquivo['rating_count']
+arquivo['User Id'] = arquivo['user_id']
+arquivo['Nome Usuário'] = arquivo['user_name']
+
+
+dados_produto = arquivo[['Id Produto', 'Nome Produto', 'Categoria Completo', 'Categoria', 
+                         'Subcategoria','Produto', 'Preço Produto', 'Desconto', '% Desconto', 
+                         'Nota Geral', 'Quantidade de Avaliações']]
+
+#segunda aba
+dados_clientes = arquivo[['User Id', 'Nome Usuário']]
+
+with pd.ExcelWriter('amazontratada.xlsx') as writer:
+    dados_produto.to_excel(writer, sheet_name='Produtos', index=False)
+    dados_clientes.to_excel(writer, sheet_name='Clientes', index=False)
+
+print('✅ Tratamento de arquivo concluído com sucesso ✅')
