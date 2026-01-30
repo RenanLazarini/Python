@@ -40,9 +40,14 @@ def motivofeedback(avaliacao):
         return np.random.choice(feedbad)
     else:
         return np.random.choice(feedgood)
+
     
 basesatisfacao["Feedback"] = basesatisfacao["Avaliação"].apply(motivofeedback)
 
-print(basesatisfacao.columns)
+datas = pd.date_range('2023-01-01', '2023-12-31')
+
+basesatisfacao['data'] = np.random.choice(datas, size=len(basesatisfacao))
+
+print(basesatisfacao)
 
 basesatisfacao.to_excel('Base Satisfação.xlsx', index=False)
